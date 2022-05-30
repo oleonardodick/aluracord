@@ -1,33 +1,8 @@
 import appConfig from '../config.json';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
-function GlobalStyle() {
-    return (
-        <style global jsx>{`
-            * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            list-style: none;
-            }
-            body {
-            font-family: 'Open Sans', sans-serif;
-            }
-            /* App fit Height */ 
-            html, body, #__next {
-            min-height: 100vh;
-            display: flex;
-            flex: 1;
-            }
-            #__next {
-            flex: 1;
-            }
-            #__next > * {
-            flex: 1;
-            }
-            /* ./App fit Height */ 
-      `}</style>
-    );
-}
+import {useRouter} from 'next/router';
+import React from 'react';
+
 function Titulo(props) {
     const Tag = props.tag;
     return (
@@ -57,11 +32,15 @@ function Titulo(props) {
 // export default HomePage
 
 export default function PaginaInicial() {
-    const username = 'LDBernardes1994';
+    //const username = 'LDBernardes1994';
+    const [username, setUsername]= React.useState('oleonardodick');
+    let [nome, setNome] = React.useState('Leonardo Bernardes');
+    let [permiteEntrar, setPermiteEntrar] = React.useState(true);
+    let [fotoUsuario, setFotoUsuario] = React.useState(`https://github.com/${username}.png`);
+    const roteamento = useRouter();
 
     return (
         <>
-            <GlobalStyle />
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -88,6 +67,15 @@ export default function PaginaInicial() {
                     {/* Formulário */}
                     <Box
                         as="form"
+                        onSubmit={function (evento){
+                            evento.preventDefault();
+                            //empilha a url para abrir a página. Com isso ele não recarregará
+                            //toda a página e sim somente o necessário
+                            roteamento.push('/chat');
+                            //Modo comum de trocar de página. Funciona também porém recarrega
+                            //toda a página.
+                            //window.location.href ='/chat';
+                        }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                             width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -98,7 +86,18 @@ export default function PaginaInicial() {
                             {appConfig.name}
                         </Text>
 
+                        {/* <input
+                            type="text"
+                            value={username}
+                            onChange={function (evento){
+                                //Onde está o valor
+                                const valor = evento.target.value;
+                                //Troca o valor da variável através do react
+                                setUsername(valor);
+                            }} 
+                        /> */}
                         <TextField
+                            value={username}
                             fullWidth
                             textFieldColors={{
                                 neutral: {
@@ -108,10 +107,33 @@ export default function PaginaInicial() {
                                     backgroundColor: appConfig.theme.colors.neutrals[800],
                                 },
                             }}
+                            onChange={function (evento){
+                                //Onde está o valor
+                                const valor = evento.target.value;
+                                //Troca o valor da variável através do react
+                                setUsername(valor);
+                                if(valor.length <= 2){
+                                    setPermiteEntrar(false);
+                                } else {
+                                    setPermiteEntrar(true);
+                                }
+                            }}
+                            onBlur={function(evento){
+                                let baseUrl = 'https://api.github.com/users/';
+                                const valor = evento.target.value;
+                                setUsername(valor);
+                                fetch(baseUrl+valor).then(function(respostaServidor){
+                                        return respostaServidor.json()
+                                    }).then(function(respostaConvertida){
+                                        setNome(respostaConvertida.name)
+                                    })
+                                setFotoUsuario(`https://github.com/${username}.png`)
+                            }}
                         />
                         <Button
                             type='submit'
                             label='Entrar'
+                            disabled = {!permiteEntrar}
                             fullWidth
                             buttonColors={{
                                 contrastColor: appConfig.theme.colors.neutrals["000"],
@@ -145,7 +167,7 @@ export default function PaginaInicial() {
                                 borderRadius: '50%',
                                 marginBottom: '16px',
                             }}
-                            src={`https://github.com/${username}.png`}
+                            src={fotoUsuario}
                         />
                         <Text
                             variant="body4"
@@ -156,7 +178,7 @@ export default function PaginaInicial() {
                                 borderRadius: '1000px'
                             }}
                         >
-                            {username}
+                            {nome}
                         </Text>
                     </Box>
                     {/* Photo Area */}
