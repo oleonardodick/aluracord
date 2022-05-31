@@ -112,11 +112,8 @@ export default function PaginaInicial() {
                                 const valor = evento.target.value;
                                 //Troca o valor da variável através do react
                                 setUsername(valor);
-                                if(valor.length <= 2){
-                                    setPermiteEntrar(false);
-                                } else {
-                                    setPermiteEntrar(true);
-                                }
+                                setPermiteEntrar(valor.length > 2);
+
                             }}
                             onBlur={function(evento){
                                 let baseUrl = 'https://api.github.com/users/';
