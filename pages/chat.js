@@ -22,6 +22,10 @@ export default function ChatPage() {
         ]);
         setMensagem('');
     }
+
+    function handleRemoveMensagem(id) {
+        setListaDeMensagens(listaDeMensagens.filter(msg => msg.id !== id));
+    }
     // ./Sua lógica vai aqui
     return (
         <Box
@@ -61,7 +65,7 @@ export default function ChatPage() {
                     }}
                 >
 
-                    <MessageList mensagens={listaDeMensagens} />
+                    <MessageList mensagens={listaDeMensagens} removeMensagem={handleRemoveMensagem} />
 
                     <Box
                         as="form"
@@ -85,7 +89,7 @@ export default function ChatPage() {
                             placeholder="Insira sua mensagem aqui..."
                             type="textarea"
                             styleSheet={{
-                                width: '100%',
+                                width: '90%',
                                 border: '0',
                                 resize: 'none',
                                 borderRadius: '5px',
@@ -93,6 +97,20 @@ export default function ChatPage() {
                                 backgroundColor: appConfig.theme.colors.neutrals[800],
                                 marginRight: '12px',
                                 color: appConfig.theme.colors.neutrals[200],
+                                display: 'inline-block'
+                            }}
+                        />
+                        <Button
+                            variant='primary'
+                            colorVariant='neutral'
+                            label='Enviar'
+                            styleSheet={{
+                                width: '8%',
+                                color: appConfig.theme.colors.neutrals[200],
+                                display: 'inline-block',
+                            }}
+                            onClick={() =>{
+                                handleNovaMensagem(mensagem);
                             }}
                         />
                     </Box>
@@ -142,30 +160,32 @@ function MessageList(props) {
                             borderRadius: '5px',
                             padding: '6px',
                             marginBottom: '12px',
-                            hover: {
-                                backgroundColor: appConfig.theme.colors.neutrals[700],
-                            }
                         }}
                     >
+                        <Image
+                            styleSheet={{
+                                width: '35px',
+                                height: '35px',
+                                borderRadius: '50%',
+                                display: 'inline-block',
+                                marginRight: '8px',
+                            }}
+                            src={`https://github.com/oleonardodick.png`}
+                        />
                         <Box
                             styleSheet={{
                                 marginBottom: '8px',
+                                display: 'inline-block',
+                                padding: '8px',
+                                borderRadius: '10px',
+                                backgroundColor: appConfig.theme.colors.neutrals[400]
                             }}
                         >
-                            <Image
-                                styleSheet={{
-                                    width: '20px',
-                                    height: '20px',
-                                    borderRadius: '50%',
-                                    display: 'inline-block',
-                                    marginRight: '8px',
-                                }}
-                                src={`https://github.com/oleonardodick.png`}
-                            />
-                            <Text 
+                            <Text
                                 tag="strong"
                                 styleSheet={{
-                                    display:'inline-block',
+                                    display: 'inline-block',
+                                    padding: '0px 5px 5px 0px'
                                 }}>
                                 {mensagem.de}
                             </Text>
@@ -173,15 +193,31 @@ function MessageList(props) {
                                 styleSheet={{
                                     fontSize: '10px',
                                     marginLeft: '8px',
-                                    color: appConfig.theme.colors.neutrals[300],
+                                    color: appConfig.theme.colors.neutrals[200],
                                     display: 'inline-block',
                                 }}
                                 tag="span"
                             >
                                 {`${mensagem.data} ${mensagem.hora}`}
                             </Text>
+                            <Button
+                                variant='tertiary'
+                                colorVariant='neutral'
+                                label='X'
+                                styleSheet={{
+                                    fontSize: '10px',
+                                    color: appConfig.theme.colors.neutrals[200],
+                                }}
+                                onClick={() => {
+                                    props.removeMensagem(mensagem.id);
+                                }}
+                            />
+                            <Text
+                                tag='strong'
+                            >
+                                {mensagem.texto}
+                            </Text>
                         </Box>
-                        {mensagem.texto}
                     </Text>
                 );
             })}
