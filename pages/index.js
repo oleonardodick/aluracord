@@ -1,6 +1,6 @@
 import appConfig from '../config.json';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 function Titulo(props) {
@@ -33,7 +33,7 @@ function Titulo(props) {
 
 export default function PaginaInicial() {
     //const username = 'LDBernardes1994';
-    const [username, setUsername]= React.useState('oleonardodick');
+    const [username, setUsername] = React.useState('oleonardodick');
     let [nome, setNome] = React.useState('Leonardo Bernardes');
     let [permiteEntrar, setPermiteEntrar] = React.useState(true);
     let [fotoUsuario, setFotoUsuario] = React.useState(`https://github.com/${username}.png`);
@@ -67,7 +67,7 @@ export default function PaginaInicial() {
                     {/* Formulário */}
                     <Box
                         as="form"
-                        onSubmit={function (evento){
+                        onSubmit={function (evento) {
                             evento.preventDefault();
                             //empilha a url para abrir a página. Com isso ele não recarregará
                             //toda a página e sim somente o necessário
@@ -107,7 +107,7 @@ export default function PaginaInicial() {
                                     backgroundColor: appConfig.theme.colors.neutrals[800],
                                 },
                             }}
-                            onChange={function (evento){
+                            onChange={function (evento) {
                                 //Onde está o valor
                                 const valor = evento.target.value;
                                 //Troca o valor da variável através do react
@@ -115,22 +115,21 @@ export default function PaginaInicial() {
                                 setPermiteEntrar(valor.length > 2);
 
                             }}
-                            onBlur={function(evento){
+                            onBlur={function (evento) {
                                 let baseUrl = 'https://api.github.com/users/';
                                 const valor = evento.target.value;
                                 setUsername(valor);
-                                fetch(baseUrl+valor).then(function(respostaServidor){
-                                        return respostaServidor.json()
-                                    }).then(function(respostaConvertida){
-                                        setNome(respostaConvertida.name)
-                                    })
+                                fetch(baseUrl + valor).then(async (respostaServidor) => {
+                                    const respostaEsperada = await respostaServidor.json()
+                                    setNome(respostaEsperada.name);
+                                })
                                 setFotoUsuario(`https://github.com/${username}.png`)
                             }}
                         />
                         <Button
                             type='submit'
                             label='Entrar'
-                            disabled = {!permiteEntrar}
+                            disabled={!permiteEntrar}
                             fullWidth
                             buttonColors={{
                                 contrastColor: appConfig.theme.colors.neutrals["000"],

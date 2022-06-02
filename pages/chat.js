@@ -1,25 +1,47 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3bGNza3l1dGtzYmpocGJtcndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTQxMjk3MTUsImV4cCI6MTk2OTcwNTcxNX0.3eGPJJIWpN8UMdYTbMyUsl-27yhUL4olNyZemlYs5vg';
+const SUPABASE_URL = 'https://uwlcskyutksbjhpbmrwp.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
     // Sua lógica vai aqui
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
+    React.useEffect(() =>{
+        supabaseClient
+        .from('mensagens')
+        .select('*')
+        .order('id',{ascending: false})
+        .then((dados) => {
+            console.log(dados);
+            setListaDeMensagens(dados.data);
+        });
+    }, []);
+
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-            id: listaDeMensagens.length,
+            created_at: new Date().toLocaleDateString(),
             de: 'oleonardodick',
-            texto: novaMensagem,
-            data: new Date().toLocaleDateString(),
-            hora: new Date().toLocaleTimeString()
+            texto: novaMensagem
 
         };
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens
-        ]);
+        supabaseClient
+            .from('mensagens')
+            .insert([
+                mensagem
+            ])
+            .then(({ data }) => {
+                setListaDeMensagens([
+                    data[0],
+                    ...listaDeMensagens
+                ]);
+            })
+
         setMensagem('');
     }
 
@@ -170,7 +192,7 @@ function MessageList(props) {
                                 display: 'inline-block',
                                 marginRight: '8px',
                             }}
-                            src={`https://github.com/oleonardodick.png`}
+                            src={`https://github.com/${mensagem.de}.png`}
                         />
                         <Box
                             styleSheet={{
@@ -198,7 +220,7 @@ function MessageList(props) {
                                 }}
                                 tag="span"
                             >
-                                {`${mensagem.data} ${mensagem.hora}`}
+                                {`${mensagem.created_at}`}
                             </Text>
                             <Button
                                 variant='tertiary'
