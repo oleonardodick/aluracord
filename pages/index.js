@@ -71,7 +71,7 @@ export default function PaginaInicial() {
                             evento.preventDefault();
                             //empilha a url para abrir a página. Com isso ele não recarregará
                             //toda a página e sim somente o necessário
-                            roteamento.push('/chat');
+                            roteamento.push(`/chat?username=${username}`);
                             //Modo comum de trocar de página. Funciona também porém recarrega
                             //toda a página.
                             //window.location.href ='/chat';
